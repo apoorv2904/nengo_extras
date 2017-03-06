@@ -1,3 +1,4 @@
+import matplotlib.patches
 import nengo
 import numpy as np
 import pytest
@@ -13,7 +14,11 @@ def test_plot_spikes(plt, seed, RefSimulator):
         nengo.Connection(inp, ens)
         p = nengo.Probe(ens.neurons, 'spikes')
 
-    with nengo.Simulator(model) as sim:
+    with RefSimulator(model) as sim:
         sim.run(1.)
 
-    plot_spikes(sim.trange(), sim.data[p], ax=plt.gca())
+    ax = plt.gca()
+    ax.add_patch(matplotlib.patches.Rectangle(
+        (0, 0), 1, 10,
+        fc=(0.8, 0.6, 0.6)))  # To check for transparency
+    plot_spikes(sim.trange(), sim.data[p], ax=ax, zorder=1)
