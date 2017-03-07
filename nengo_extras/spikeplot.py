@@ -137,6 +137,8 @@ def sample_by_activity(t, spikes, num, blocksize=None):
     tuple (t, selected_spikes)
         Returns the time indices *t* and the selected spike trains *spikes*.
     """
+    spikes = np.asarray(spikes)
+
     if spikes.shape[1] <= num:
         return t, spikes
 
