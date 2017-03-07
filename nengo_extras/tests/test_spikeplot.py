@@ -5,7 +5,7 @@ from numpy.testing import assert_equal
 import pytest
 
 from nengo_extras.spikeplot import (
-    plot_spikes, sample_by_activity, sample_by_variance)
+    cluster, plot_spikes, sample_by_activity, sample_by_variance)
 
 
 @pytest.mark.noassertions
@@ -24,6 +24,18 @@ def test_plot_spikes(plt, seed, RefSimulator):
         (0, 0), 1, 10,
         fc=(0.8, 0.6, 0.6)))  # To check for transparency
     plot_spikes(sim.trange(), sim.data[p], ax=ax, zorder=1)
+
+
+def test_cluster():
+    dt = 0.001
+    t = np.arange(0., 1., dt) + dt
+
+    spikes = np.zeros((len(t), 4))
+    spikes[:, 1::2] = 1. / dt
+
+    t_clustered, spikes_clustered = cluster(t, spikes, filter_width=dt)
+    assert_equal(t_clustered, t)
+    assert_equal(spikes_clustered, spikes[:, [0, 2, 1, 3]])
 
 
 def test_sample_by_variance():
