@@ -1,9 +1,10 @@
 import matplotlib.patches
 import nengo
 import numpy as np
+from numpy.testing import assert_equal
 import pytest
 
-from nengo_extras.spikeplot import plot_spikes
+from nengo_extras.spikeplot import plot_spikes, sample_by_variance
 
 
 @pytest.mark.noassertions
@@ -22,3 +23,33 @@ def test_plot_spikes(plt, seed, RefSimulator):
         (0, 0), 1, 10,
         fc=(0.8, 0.6, 0.6)))  # To check for transparency
     plot_spikes(sim.trange(), sim.data[p], ax=ax, zorder=1)
+
+
+def test_sample_by_variance():
+    dt = 0.001
+    t = np.arange(0., 1., dt) + dt
+
+    spikes = np.zeros((len(t), 4))
+    spikes[::, 1] = 1. / dt
+    spikes[::10, 2] = 1. / dt
+    spikes[::100, 3] = 1. / dt
+
+    t_sampled, spikes_sampled = sample_by_variance(
+        t, spikes, num=1, filter_width=0.001)
+    assert_equal(t_sampled, t)
+    assert_equal(spikes_sampled, spikes[:, [2]])
+
+    t_sampled, spikes_sampled = sample_by_variance(
+        t, spikes, num=1, filter_width=0.1)
+    assert_equal(t_sampled, t)
+    assert_equal(spikes_sampled, spikes[:, [3]])
+
+    t_sampled, spikes_sampled = sample_by_variance(
+        t, spikes, num=2, filter_width=0.1)
+    assert_equal(t_sampled, t)
+    assert_equal(spikes_sampled, spikes[:, [3, 2]])
+
+    t_sampled, spikes_sampled = sample_by_variance(
+        t, spikes, num=20, filter_width=0.1)
+    assert_equal(t_sampled, t)
+    assert_equal(spikes_sampled, spikes[:, [3, 2, 1, 0]])
