@@ -5,7 +5,7 @@ from numpy.testing import assert_equal
 import pytest
 
 from nengo_extras.spikeplot import (
-    cluster, plot_spikes, sample_by_activity, sample_by_variance)
+    cluster, merge, plot_spikes, sample_by_activity, sample_by_variance)
 
 
 @pytest.mark.noassertions
@@ -36,6 +36,23 @@ def test_cluster():
     t_clustered, spikes_clustered = cluster(t, spikes, filter_width=dt)
     assert_equal(t_clustered, t)
     assert_equal(spikes_clustered, spikes[:, [0, 2, 1, 3]])
+
+
+def test_merge():
+    dt = 0.001
+    t = np.arange(0., 1., dt) + dt
+
+    spikes = np.zeros((len(t), 4))
+    spikes[:, 1::2] = 1. / dt
+    spikes[:, 0] = 1. / dt
+
+    expected = np.empty((len(t), 2))
+    expected[:, 0] = 1. / dt
+    expected[:, 1] = .5 / dt
+
+    t_merged, spikes_merged = merge(t, spikes, num=2)
+    assert_equal(t_merged, t)
+    assert_equal(spikes_merged, expected)
 
 
 def test_sample_by_variance():
