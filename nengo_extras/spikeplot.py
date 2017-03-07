@@ -88,6 +88,8 @@ def cluster(t, spikes, filter_width):
 def sample_by_variance(t, spikes, num, filter_width):
     """Samples the spike trains with the highest variance.
 
+    Requires SciPy.
+
     Parameters
     ----------
     t : (n,) array
