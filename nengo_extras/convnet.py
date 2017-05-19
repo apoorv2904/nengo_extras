@@ -7,6 +7,12 @@ from nengo.params import (EnumParam, NdarrayParam, Parameter, ShapeParam,
 from nengo.utils.compat import is_iterable, range
 
 
+def softmax(x, axis=None):
+    """Stable softmax function"""
+    ex = np.exp(x - x.max(axis=axis, keepdims=True))
+    return ex / ex.sum(axis=axis, keepdims=True)
+
+
 class Conv2d(Process):
     """Perform 2-D (image) convolution on an input.
 
@@ -225,9 +231,3 @@ class Pool2d(Process):
             return y.ravel()
 
         return step_pool2d
-
-
-def softmax(x, axis=None):
-    """Stable softmax function"""
-    ex = np.exp(x - x.max(axis=axis, keepdims=True))
-    return ex / ex.sum(axis=axis, keepdims=True)
