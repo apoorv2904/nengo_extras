@@ -14,6 +14,8 @@ also be found in this model to allow to fine-tune the preprocessing according
 to the data.
 """
 
+from __future__ import absolute_import
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
